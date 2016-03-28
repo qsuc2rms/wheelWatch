@@ -1,16 +1,24 @@
 package ops.dcg.lenovo.wheelwatch;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
 
+
+
+public class MainActivity extends AppCompatActivity implements  WatchView.OnTimerSetUpListener{
+private TextView txt;
+    private  WatchView watch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        txt=(TextView)findViewById(R.id.txt_info);
+        watch=(WatchView)findViewById(R.id.clk_watch);
+        watch.setOnTimerSetUpListener(this);
     }
 
     @Override
@@ -33,5 +41,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTimerSetUp(String time) {
+        txt.setText("Timer is set as: "+time);
     }
 }
