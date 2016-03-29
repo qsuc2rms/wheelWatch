@@ -106,11 +106,11 @@ public class WatchView extends View {
         mPaintHour.setColor(Color.BLACK);
 
         mPaintHourTarget = new Paint();
-        mPaintHourTarget.setStrokeWidth(12);
+        mPaintHourTarget.setStrokeWidth(3);
         mPaintHourTarget.setAntiAlias(true);//设置是否抗锯齿
         mPaintHourTarget.setColor(Color.TRANSPARENT);
-        mPaintHourTarget.setStrokeWidth(12);//设置线宽
-        mPaintHourTarget.setStyle(Paint.Style.STROKE);//设置绘制风格
+        mPaintHourTarget.setStrokeWidth(3);//设置线宽
+        mPaintHourTarget.setStyle(Paint.Style.FILL);//设置绘制风格
 
         mPaintMinute = new Paint();
         mPaintMinute.setStrokeWidth(12);
@@ -118,11 +118,11 @@ public class WatchView extends View {
         mPaintMinute.setColor(Color.DKGRAY);
 
         mPaintMinuteTarget = new Paint();
-        mPaintMinuteTarget.setStrokeWidth(10);
+        mPaintMinuteTarget.setStrokeWidth(3);
         mPaintMinuteTarget.setAntiAlias(true);//设置是否抗锯齿
         mPaintMinuteTarget.setColor(Color.TRANSPARENT);
-        mPaintMinuteTarget.setStrokeWidth(10);//设置线宽
-        mPaintMinuteTarget.setStyle(Paint.Style.STROKE);//设置绘制风格
+        mPaintMinuteTarget.setStrokeWidth(3);//设置线宽
+        mPaintMinuteTarget.setStyle(Paint.Style.FILL);//设置绘制风格
 
         mPaintSec = new Paint();
         mPaintSec.setStrokeWidth(8);
@@ -169,6 +169,17 @@ public class WatchView extends View {
         canvas.drawCircle(width / 2, height / 2, circleRadius * 2 / 3, mPaintRoundMinute);
 
         float minuteDegree = minute / 60f * 360;//得到分针旋转的角度
+
+        //画定时分针的圆弧
+        RectF rectMinute = new RectF(width / 2 - circleRadius * 2 / 3, height / 2 - circleRadius * 2 / 3, width / 2
+                + circleRadius * 2 / 3, height / 2 + circleRadius * 2 / 3);
+        if (degreeMinuteTarget >= minuteDegree) {
+            canvas.drawArc(rectMinute, minuteDegree - 90, degreeMinuteTarget - minuteDegree, true, mPaintMinuteTarget);
+        } else {
+            canvas.drawArc(rectMinute, minuteDegree - 90, 360 - minuteDegree, true, mPaintMinuteTarget);
+            canvas.drawArc(rectMinute, 0 - 90, degreeMinuteTarget - 0, true, mPaintMinuteTarget);
+        }
+
         canvas.save();
         canvas.rotate(minuteDegree, width / 2, height / 2);
         canvas.drawLine(width / 2, height / 2 - circleRadius * 2 / 3, width / 2, height / 2 + 35, mPaintMinute);
@@ -177,23 +188,24 @@ public class WatchView extends View {
         //画出定时分针
         canvas.save();
         canvas.rotate(degreeMinuteTarget, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 2 / 3, width / 2, height / 2 + 30, mPaintMinuteTarget);
+        canvas.drawLine(width / 2, height / 2 - circleRadius * 2 / 3, width / 2, height / 2 , mPaintMinuteTarget);
         canvas.restore();
-
-        //画定时分针的圆弧
-        RectF rectMinute = new RectF(width / 2 - circleRadius * 2 / 3, height / 2 - circleRadius * 2 / 3, width / 2
-                + circleRadius * 2 / 3, height / 2 + circleRadius * 2 / 3);
-        if (degreeMinuteTarget >= minuteDegree) {
-            canvas.drawArc(rectMinute, minuteDegree - 90, degreeMinuteTarget - minuteDegree, false, mPaintMinuteTarget);
-        } else {
-            canvas.drawArc(rectMinute, minuteDegree - 90, 360 - minuteDegree, false, mPaintMinuteTarget);
-            canvas.drawArc(rectMinute, 0 - 90, degreeMinuteTarget - 0, false, mPaintMinuteTarget);
-        }
 
         //画出时针圆
         canvas.drawCircle(width / 2, height / 2, circleRadius * 1 / 2, mPaintRoundHour);
 
         float hourDegree = (hour * 60 + minute) / 12f / 60 * 360;//得到时钟旋转的角度
+
+        //画定时时针的圆弧
+        RectF rectHour = new RectF(width / 2 - circleRadius * 1 / 2, height / 2 - circleRadius * 1 / 2, width / 2
+                + circleRadius * 1 / 2, height / 2 + circleRadius * 1 / 2);
+        if (degreeHourTarget >= hourDegree) {
+            canvas.drawArc(rectHour, hourDegree - 90, degreeHourTarget - hourDegree, true, mPaintHourTarget);
+        } else {
+            canvas.drawArc(rectHour, hourDegree - 90, 360 - hourDegree, true, mPaintHourTarget);
+            canvas.drawArc(rectHour, 0 - 90, degreeHourTarget - 0, true, mPaintHourTarget);
+        }
+
         canvas.save();
         canvas.rotate(hourDegree, width / 2, height / 2);
         canvas.drawLine(width / 2, height / 2 - circleRadius * 1 / 2, width / 2, height / 2 + 30, mPaintHour);
@@ -202,18 +214,8 @@ public class WatchView extends View {
         //画出定时时针
         canvas.save();
         canvas.rotate(degreeHourTarget, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 1 / 2, width / 2, height / 2 + 30, mPaintHourTarget);
+        canvas.drawLine(width / 2, height / 2 - circleRadius * 1 / 2, width / 2, height / 2 , mPaintHourTarget);
         canvas.restore();
-
-        //画定时时针的圆弧
-        RectF rectHour = new RectF(width / 2 - circleRadius * 1 / 2, height / 2 - circleRadius * 1 / 2, width / 2
-                + circleRadius * 1 / 2, height / 2 + circleRadius * 1 / 2);
-        if (degreeHourTarget >= hourDegree) {
-            canvas.drawArc(rectHour, hourDegree - 90, degreeHourTarget - hourDegree, false, mPaintHourTarget);
-        } else {
-            canvas.drawArc(rectHour, hourDegree - 90, 360 - hourDegree, false, mPaintHourTarget);
-            canvas.drawArc(rectHour, 0 - 90, degreeHourTarget - 0, false, mPaintHourTarget);
-        }
 
         //秒针在最上面
         float secDegree = sec / 60f * 360;//得到秒针旋转的角度
