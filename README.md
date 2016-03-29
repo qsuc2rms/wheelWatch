@@ -12,7 +12,7 @@ You may find it difficult to set an exact time by minute, touch the outer side o
 
 ![image](https://github.com/qsuc2rms/wheelWatch/blob/master/setminute.jpg)
 
-When your timer is by daytime, the bg image will indicate that it will be daytime.
+According to your target time, the bg image will indicate that it will be daytime or at night.
 
 ![image](https://github.com/qsuc2rms/wheelWatch/blob/master/settoday.jpg)
 
