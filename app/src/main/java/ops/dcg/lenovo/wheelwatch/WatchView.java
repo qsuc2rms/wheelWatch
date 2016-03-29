@@ -23,7 +23,6 @@ public class WatchView extends View {
     private int circleRadius;
     private float degreeMinuteTarget;
     private float degreeHourTarget;
-    private Paint mPaintLine;
     private Paint mPaintCircle;
     private Paint mPaintRound;
     private Paint mPaintHour;
@@ -63,62 +62,67 @@ public class WatchView extends View {
 
         mCalendar = Calendar.getInstance();
 
-        mPaintLine = new Paint();
-        mPaintLine.setColor(Color.BLUE);
-        mPaintLine.setStrokeWidth(10);
-
+        //绘制表盘
         mPaintCircle = new Paint();
         mPaintCircle.setColor(Color.DKGRAY);//设置颜色
         mPaintCircle.setStrokeWidth(10);//设置线宽
         mPaintCircle.setAntiAlias(true);//设置是否抗锯齿
         mPaintCircle.setStyle(Paint.Style.STROKE);//设置绘制风格
 
-        //指针的固定螺丝
+        //所以指针顶部的固定螺丝
         mPaintRound = new Paint();
         mPaintRound.setColor(Color.BLACK);//设置颜色
         mPaintRound.setStrokeWidth(3);//设置线宽
         mPaintRound.setAntiAlias(true);//设置是否抗锯齿
         mPaintRound.setStyle(Paint.Style.FILL);//设置绘制风格
 
+        //表盘时钟文字
         mPaintText = new Paint();
         mPaintText.setColor(Color.DKGRAY);
         mPaintText.setStrokeWidth(10);
         mPaintText.setTextAlign(Paint.Align.CENTER);
         mPaintText.setTextSize(40);
 
+        //时针
         mPaintHour = new Paint();
         mPaintHour.setStrokeWidth(15);
         mPaintHour.setAntiAlias(true);//设置是否抗锯齿
         mPaintHour.setColor(Color.BLACK);
 
+        //timer的时针
         mPaintHourTarget = new Paint();
         mPaintHourTarget.setStrokeWidth(3);
         mPaintHourTarget.setAntiAlias(true);//设置是否抗锯齿
         mPaintHourTarget.setColor(Color.TRANSPARENT);
 
+        //timer的滑动范围
         mPaintHourArc = new Paint();
         mPaintHourArc.setAntiAlias(true);//设置是否抗锯齿
         mPaintHourArc.setColor(Color.TRANSPARENT);
         mPaintHourArc.setStrokeWidth(3);//设置线宽
         mPaintHourArc.setStyle(Paint.Style.FILL);//设置绘制风格
 
+        //分针
         mPaintMinute = new Paint();
         mPaintMinute.setStrokeWidth(12);
         mPaintMinute.setAntiAlias(true);//设置是否抗锯齿
         mPaintMinute.setColor(Color.DKGRAY);
 
+        //用于精细设置分针timer的圆环
         mPaintMinuteRing = new Paint();
         mPaintMinuteRing.setAntiAlias(true);//设置是否抗锯齿
         mPaintMinuteRing.setColor(Color.TRANSPARENT);
         mPaintMinuteRing.setStrokeWidth(20);//设置线宽
         mPaintMinuteRing.setStyle(Paint.Style.STROKE);//设置绘制风格
 
+        //圆环上指示所选分钟的指针
         mPaintMinuteTriangle = new Paint();
         mPaintMinuteTriangle.setAntiAlias(true);//设置是否抗锯齿
         mPaintMinuteTriangle.setColor(Color.TRANSPARENT);
         mPaintMinuteTriangle.setStrokeWidth(3);//设置线宽
         mPaintMinuteTriangle.setStyle(Paint.Style.FILL);//设置绘制风格
 
+        //秒针
         mPaintSec = new Paint();
         mPaintSec.setStrokeWidth(8);
         mPaintSec.setAntiAlias(true);//设置是否抗锯齿
@@ -163,17 +167,17 @@ public class WatchView extends View {
         float minuteDegree = minute / 60f * 360;//得到分针旋转的角度
         float hourDegree = (hour * 60 + minute) / 12f / 60 * 360;//得到时钟旋转的角度
 
-        float minuteNeedleLength=circleRadius * 2 / 3;
-        float hourNeedleLength=circleRadius * 1 / 2;
+        float minuteNeedleLength = circleRadius * 2 / 3;
+        float hourNeedleLength = circleRadius * 1 / 2;
 
         //画定时分针的圆环和三角
-        mPaintMinuteRing.setStrokeWidth(minuteNeedleLength-hourNeedleLength);
-        canvas.drawCircle(width / 2, height / 2, circleRadius * 1 / 2 + mPaintMinuteRing.getStrokeWidth() / 2+3, mPaintMinuteRing);
+        mPaintMinuteRing.setStrokeWidth(minuteNeedleLength - hourNeedleLength);
+        canvas.drawCircle(width / 2, height / 2, circleRadius * 1 / 2 + mPaintMinuteRing.getStrokeWidth() / 2 + 3, mPaintMinuteRing);
 
         canvas.save();//保存当前画布
         canvas.rotate(360 / 60 * getTimerMinute(), width / 2, height / 2);
         //左起：起始位置x坐标，起始位置y坐标，终止位置x坐标，终止位置y坐标，画笔(一个Paint对象)
-        canvas.drawLine(width / 2, height/2 -hourNeedleLength-( mPaintMinuteRing.getStrokeWidth() / 2+3), width / 2, height/2-hourNeedleLength - (mPaintMinuteRing.getStrokeWidth()), mPaintMinuteTriangle);
+        canvas.drawLine(width / 2, height / 2 - hourNeedleLength - (mPaintMinuteRing.getStrokeWidth() / 2 + 3), width / 2, height / 2 - hourNeedleLength - (mPaintMinuteRing.getStrokeWidth()), mPaintMinuteTriangle);
         canvas.restore();
 
         //画定时时针的圆弧
@@ -263,8 +267,8 @@ public class WatchView extends View {
             case MotionEvent.ACTION_UP:
                 mPaintHour.setStrokeWidth(15);
                 mPaintMinute.setStrokeWidth(12);
-//                mPaintMinuteRing.setColor(Color.TRANSPARENT);
-//                mPaintMinuteTriangle.setColor(Color.TRANSPARENT);
+                mPaintMinuteRing.setColor(Color.TRANSPARENT);
+                mPaintMinuteTriangle.setColor(Color.TRANSPARENT);
                 handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
 
                 //向调用者传递已选好的时间
@@ -278,6 +282,9 @@ public class WatchView extends View {
         return super.onTouchEvent(ev);
     }
 
+    /*
+    * 获取当前手指位置的角度
+     */
     private float getDegree(float x, float y) {
         float x0 = width / 2, y0 = height / 2;
         float disx = Math.abs(x0 - x);
@@ -298,10 +305,10 @@ public class WatchView extends View {
         return degree;
     }
 
-    private void updateDegreeHourTarget(float minuteDegree){
+    private void updateDegreeHourTarget(float minuteDegree) {
         int fromHour = getTimerHour();
-        int toMinute=(int)(minuteDegree *60/360);
-        degreeHourTarget=(fromHour * 60 + toMinute) / 12f / 60 * 360;
+        int toMinute = (int) (minuteDegree * 60 / 360);
+        degreeHourTarget = (fromHour * 60 + toMinute) / 12f / 60 * 360;
     }
 
     /*
@@ -338,6 +345,9 @@ public class WatchView extends View {
         return strH + ":" + strM + ":" + "00";
     }
 
+    /*
+    * 控件已选定时时间的回调接口
+     */
     public interface OnTimerSetUpListener {
         public void onTimerSetUp(String time);
     }
