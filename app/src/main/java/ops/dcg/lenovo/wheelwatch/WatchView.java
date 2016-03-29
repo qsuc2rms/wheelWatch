@@ -26,12 +26,12 @@ public class WatchView extends View {
     private Paint mPaintLine;
     private Paint mPaintCircle;
     private Paint mPaintRound;
-    private Paint mPaintRoundHour;
-    private Paint mPaintRoundMinute;
     private Paint mPaintHour;
     private Paint mPaintHourTarget;
+    private Paint mPaintHourArc;
     private Paint mPaintMinute;
-    private Paint mPaintMinuteTarget;
+    private Paint mPaintMinuteRing;
+    private Paint mPaintMinuteTriangle;
     private Paint mPaintSec;
     private Paint mPaintText;
     private Calendar mCalendar;
@@ -80,20 +80,6 @@ public class WatchView extends View {
         mPaintRound.setAntiAlias(true);//设置是否抗锯齿
         mPaintRound.setStyle(Paint.Style.FILL);//设置绘制风格
 
-        //时针所在的圆盘，默认透明
-        mPaintRoundHour = new Paint();
-        mPaintRoundHour.setColor(Color.TRANSPARENT);//设置颜色
-        mPaintRoundHour.setStrokeWidth(1);//设置线宽
-        mPaintRoundHour.setAntiAlias(true);//设置是否抗锯齿
-        mPaintRoundHour.setStyle(Paint.Style.FILL);//设置绘制风格
-
-        //分针所在的圆盘，默认透明
-        mPaintRoundMinute = new Paint();
-        mPaintRoundMinute.setColor(Color.TRANSPARENT);//设置颜色
-        mPaintRoundMinute.setStrokeWidth(1);//设置线宽
-        mPaintRoundMinute.setAntiAlias(true);//设置是否抗锯齿
-        mPaintRoundMinute.setStyle(Paint.Style.FILL);//设置绘制风格
-
         mPaintText = new Paint();
         mPaintText.setColor(Color.DKGRAY);
         mPaintText.setStrokeWidth(10);
@@ -109,20 +95,29 @@ public class WatchView extends View {
         mPaintHourTarget.setStrokeWidth(3);
         mPaintHourTarget.setAntiAlias(true);//设置是否抗锯齿
         mPaintHourTarget.setColor(Color.TRANSPARENT);
-        mPaintHourTarget.setStrokeWidth(3);//设置线宽
-        mPaintHourTarget.setStyle(Paint.Style.FILL);//设置绘制风格
+
+        mPaintHourArc = new Paint();
+        mPaintHourArc.setAntiAlias(true);//设置是否抗锯齿
+        mPaintHourArc.setColor(Color.TRANSPARENT);
+        mPaintHourArc.setStrokeWidth(3);//设置线宽
+        mPaintHourArc.setStyle(Paint.Style.FILL);//设置绘制风格
 
         mPaintMinute = new Paint();
         mPaintMinute.setStrokeWidth(12);
         mPaintMinute.setAntiAlias(true);//设置是否抗锯齿
         mPaintMinute.setColor(Color.DKGRAY);
 
-        mPaintMinuteTarget = new Paint();
-        mPaintMinuteTarget.setStrokeWidth(3);
-        mPaintMinuteTarget.setAntiAlias(true);//设置是否抗锯齿
-        mPaintMinuteTarget.setColor(Color.TRANSPARENT);
-        mPaintMinuteTarget.setStrokeWidth(3);//设置线宽
-        mPaintMinuteTarget.setStyle(Paint.Style.FILL);//设置绘制风格
+        mPaintMinuteRing = new Paint();
+        mPaintMinuteRing.setAntiAlias(true);//设置是否抗锯齿
+        mPaintMinuteRing.setColor(Color.TRANSPARENT);
+        mPaintMinuteRing.setStrokeWidth(20);//设置线宽
+        mPaintMinuteRing.setStyle(Paint.Style.STROKE);//设置绘制风格
+
+        mPaintMinuteTriangle = new Paint();
+        mPaintMinuteTriangle.setAntiAlias(true);//设置是否抗锯齿
+        mPaintMinuteTriangle.setColor(Color.TRANSPARENT);
+        mPaintMinuteTriangle.setStrokeWidth(3);//设置线宽
+        mPaintMinuteTriangle.setStyle(Paint.Style.FILL);//设置绘制风格
 
         mPaintSec = new Paint();
         mPaintSec.setStrokeWidth(8);
@@ -165,56 +160,48 @@ public class WatchView extends View {
         int hour = mCalendar.get(Calendar.HOUR);//得到当前小时数
         int sec = mCalendar.get(Calendar.SECOND);//得到当前秒数
 
-        //画出分针圆
-        canvas.drawCircle(width / 2, height / 2, circleRadius * 2 / 3, mPaintRoundMinute);
-
         float minuteDegree = minute / 60f * 360;//得到分针旋转的角度
-
-        //画定时分针的圆弧
-        RectF rectMinute = new RectF(width / 2 - circleRadius * 2 / 3, height / 2 - circleRadius * 2 / 3, width / 2
-                + circleRadius * 2 / 3, height / 2 + circleRadius * 2 / 3);
-        if (degreeMinuteTarget >= minuteDegree) {
-            canvas.drawArc(rectMinute, minuteDegree - 90, degreeMinuteTarget - minuteDegree, true, mPaintMinuteTarget);
-        } else {
-            canvas.drawArc(rectMinute, minuteDegree - 90, 360 - minuteDegree, true, mPaintMinuteTarget);
-            canvas.drawArc(rectMinute, 0 - 90, degreeMinuteTarget - 0, true, mPaintMinuteTarget);
-        }
-
-        canvas.save();
-        canvas.rotate(minuteDegree, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 2 / 3, width / 2, height / 2 + 35, mPaintMinute);
-        canvas.restore();
-
-        //画出定时分针
-        canvas.save();
-        canvas.rotate(degreeMinuteTarget, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 2 / 3, width / 2, height / 2 , mPaintMinuteTarget);
-        canvas.restore();
-
-        //画出时针圆
-        canvas.drawCircle(width / 2, height / 2, circleRadius * 1 / 2, mPaintRoundHour);
-
         float hourDegree = (hour * 60 + minute) / 12f / 60 * 360;//得到时钟旋转的角度
 
+        float minuteNeedleLength=circleRadius * 2 / 3;
+        float hourNeedleLength=circleRadius * 1 / 2;
+
+        //画定时分针的圆环和三角
+        mPaintMinuteRing.setStrokeWidth(minuteNeedleLength-hourNeedleLength);
+        canvas.drawCircle(width / 2, height / 2, circleRadius * 1 / 2 + mPaintMinuteRing.getStrokeWidth() / 2+3, mPaintMinuteRing);
+
+        canvas.save();//保存当前画布
+        canvas.rotate(360 / 60 * getTimerMinute(), width / 2, height / 2);
+        //左起：起始位置x坐标，起始位置y坐标，终止位置x坐标，终止位置y坐标，画笔(一个Paint对象)
+        canvas.drawLine(width / 2, height/2 -hourNeedleLength-( mPaintMinuteRing.getStrokeWidth() / 2+3), width / 2, height/2-hourNeedleLength - (mPaintMinuteRing.getStrokeWidth()), mPaintMinuteTriangle);
+        canvas.restore();
+
         //画定时时针的圆弧
-        RectF rectHour = new RectF(width / 2 - circleRadius * 1 / 2, height / 2 - circleRadius * 1 / 2, width / 2
-                + circleRadius * 1 / 2, height / 2 + circleRadius * 1 / 2);
+        RectF rectHour = new RectF(width / 2 - hourNeedleLength, height / 2 - hourNeedleLength, width / 2
+                + hourNeedleLength, height / 2 + hourNeedleLength);
         if (degreeHourTarget >= hourDegree) {
-            canvas.drawArc(rectHour, hourDegree - 90, degreeHourTarget - hourDegree, true, mPaintHourTarget);
+            canvas.drawArc(rectHour, hourDegree - 90, degreeHourTarget - hourDegree, true, mPaintHourArc);
         } else {
-            canvas.drawArc(rectHour, hourDegree - 90, 360 - hourDegree, true, mPaintHourTarget);
-            canvas.drawArc(rectHour, 0 - 90, degreeHourTarget - 0, true, mPaintHourTarget);
+            canvas.drawArc(rectHour, hourDegree - 90, 360 - hourDegree, true, mPaintHourArc);
+            canvas.drawArc(rectHour, 0 - 90, degreeHourTarget - 0, true, mPaintHourArc);
         }
 
+        //画出分针
+        canvas.save();
+        canvas.rotate(minuteDegree, width / 2, height / 2);
+        canvas.drawLine(width / 2, height / 2 - minuteNeedleLength, width / 2, height / 2 + 35, mPaintMinute);
+        canvas.restore();
+
+        //画出时针
         canvas.save();
         canvas.rotate(hourDegree, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 1 / 2, width / 2, height / 2 + 30, mPaintHour);
+        canvas.drawLine(width / 2, height / 2 - hourNeedleLength, width / 2, height / 2 + 30, mPaintHour);
         canvas.restore();
 
         //画出定时时针
         canvas.save();
         canvas.rotate(degreeHourTarget, width / 2, height / 2);
-        canvas.drawLine(width / 2, height / 2 - circleRadius * 1 / 2, width / 2, height / 2 , mPaintHourTarget);
+        canvas.drawLine(width / 2, height / 2 - hourNeedleLength, width / 2, height / 2, mPaintHourTarget);
         canvas.restore();
 
         //秒针在最上面
@@ -241,15 +228,14 @@ public class WatchView extends View {
                     return super.onTouchEvent(ev);
                 } else if (distance > circleRadius * 1 / 2) {
                     mPaintMinute.setStrokeWidth(20);
-                    mPaintRoundMinute.setColor(Color.LTGRAY);
                     degreeMinuteTarget = getDegree(ev.getX(), ev.getY());
-                    mPaintMinuteTarget.setColor(Color.CYAN);
+                    mPaintMinuteRing.setColor(Color.RED);
+                    mPaintMinuteTriangle.setColor(Color.BLACK);
                     handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
                 } else {
                     mPaintHour.setStrokeWidth(20);
-                    mPaintRoundHour.setColor(Color.GRAY);
                     degreeHourTarget = getDegree(ev.getX(), ev.getY());
-                    mPaintHourTarget.setColor(Color.RED);
+                    mPaintHourArc.setColor(Color.RED);
                     handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
                 }
 
@@ -258,18 +244,27 @@ public class WatchView extends View {
 
                 if (mPaintHour.getStrokeWidth() >= 20) {
                     degreeHourTarget = getDegree(ev.getX(), ev.getY());
+                    mPaintHourTarget.setColor(Color.BLACK);
                     handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
                 } else if (mPaintMinute.getStrokeWidth() >= 20) {
                     degreeMinuteTarget = getDegree(ev.getX(), ev.getY());
+                    updateDegreeHourTarget(degreeMinuteTarget);
+                    mPaintMinuteRing.setColor(Color.RED);
+                    mPaintMinuteTriangle.setColor(Color.BLACK);
                     handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
+                }
+
+                //向调用者传递选好的时间
+                if (listener != null) {
+                    listener.onTimerSetUp(getTimerTime());
                 }
 
                 return true;
             case MotionEvent.ACTION_UP:
                 mPaintHour.setStrokeWidth(15);
-                mPaintRoundHour.setColor(Color.TRANSPARENT);
                 mPaintMinute.setStrokeWidth(12);
-                mPaintRoundMinute.setColor(Color.TRANSPARENT);
+//                mPaintMinuteRing.setColor(Color.TRANSPARENT);
+//                mPaintMinuteTriangle.setColor(Color.TRANSPARENT);
                 handler.sendEmptyMessage(NEED_INVALIDATE);//向handler发送一个消息，让它开启重绘
 
                 //向调用者传递已选好的时间
@@ -303,11 +298,19 @@ public class WatchView extends View {
         return degree;
     }
 
+    private void updateDegreeHourTarget(float minuteDegree){
+        int fromHour = getTimerHour();
+        int toMinute=(int)(minuteDegree *60/360);
+        degreeHourTarget=(fromHour * 60 + toMinute) / 12f / 60 * 360;
+    }
+
     /*
     *获取定时的分钟
      */
     public int getTimerMinute() {
-        int minute = (int) (degreeMinuteTarget * 60 / 360);
+        int fromHour = getTimerHour();
+        float fromDegree = fromHour * 360 / 12;
+        int minute = (int) ((degreeHourTarget - fromDegree) * 60 / (360 / 12));
         return minute;
     }
 
@@ -340,7 +343,8 @@ public class WatchView extends View {
     }
 
     private OnTimerSetUpListener listener;
-    public  void setOnTimerSetUpListener(OnTimerSetUpListener outerlistener){
-        listener=outerlistener;
+
+    public void setOnTimerSetUpListener(OnTimerSetUpListener outerlistener) {
+        listener = outerlistener;
     }
 }
