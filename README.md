@@ -16,3 +16,8 @@ According to your target time, the bg image will indicate that it will be daytim
 
 ![image](https://github.com/qsuc2rms/wheelWatch/blob/master/settoday.jpg)
 
+More ideas to be done
+1.Should be able to set next 24 hours, now is restircted to 12 hours, current disign is to use 2 arc, one smaller one inside for next 12 hours, one bigger one outside for next 12~24 hours.
+2.Enhance current day & night indication to sun & moon with a background color, fade in and fade out.
+3.Current clock should be add while shells for each item to be seen clearly both on light bg and on dark bg.
+4.The function to check day & night should be enhanced to consider date & month & geo location, weather is also welcome to add in.
